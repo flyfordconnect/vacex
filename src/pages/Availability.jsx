@@ -6,9 +6,8 @@
 // Elevated users (Leave Administrators group) can add and
 // cancel leave directly from the timeline.
 // ─────────────────────────────────────────────────────────────
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useDataverse } from '../hooks/useDataverse';
-import { useMsal } from '@azure/msal-react';
 import {
   fetchOperators,
   fetchAllLeaveRequests,
@@ -19,7 +18,7 @@ import {
   currentLeaveYear,
   daysBetween,
 } from '../api/dataverse';
-import { LEAVE_ADMIN_GROUP_ID } from '../authConfig';
+import { useGroups } from '../hooks/useGroups';
 
 // ─── Helpers ──────────────────────────────────────────────────
 function getDaysInMonth(year, month) {
@@ -50,29 +49,16 @@ const LEAVE_TYPE_OPTIONS_LIST = [
 
 const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
-// ─── Check Graph group membership ─────────────────────────────
-async function checkLeaveAdminGroup(instance, account) {
-  try {
-    const tokenResponse = await instance.acquireTokenSilent({
-      scopes: ['https://graph.microsoft.com/GroupMember.Read.All'],
-      account,
-    });
-    const res = await fetch(
-      `https://graph.microsoft.com/v1.0/me/memberOf?$select=id`,
-      { headers: { Authorization: `Bearer ${tokenResponse.accessToken}` } }
-    );
-    const data = await res.json();
-    return (data.value ?? []).some(g => g.id === LEAVE_ADMIN_GROUP_ID);
-  } catch {
-    return false;
-  }
-}
+
 
 // ─── Component ────────────────────────────────────────────────
 export default function Availability() {
   const { callDataverse, userEmail } = useDataverse();
   const { instance, accounts } = useMsal();
-  const account = accounts[0];
+  const { groups } = useGroups();
+
+  const isAdmin      = groups?.canElevateOperators ?? false;
+  const canSeeAll    = groups?.canSeeAllStaff ?? false;
 
   // Current month/year navigation
   const now = new Date();
@@ -82,7 +68,6 @@ export default function Availability() {
   // Data
   const [operators,     setOperators]     = useState([]);
   const [leaveRequests, setLeaveRequests] = useState([]);
-  const [isAdmin,       setIsAdmin]       = useState(false);
   const [loading,       setLoading]       = useState(true);
   const [error,         setError]         = useState(null);
   const [toast,         setToast]         = useState(null);
@@ -118,20 +103,23 @@ export default function Availability() {
     setLoading(true);
     setError(null);
     try {
-      const [ops, reqs, admin] = await Promise.all([
+      const [ops, reqs] = await Promise.all([
         fetchOperators(callDataverse),
         fetchAllLeaveRequests(callDataverse, monthStart, monthEnd),
-        checkLeaveAdminGroup(instance, account),
       ]);
-      setOperators(ops);
+      // Operations group sees operators only — filter by job title or department
+      // Leave Administrators All Staff sees everyone
+      setOperators(canSeeAll ? ops : ops.filter(op =>
+        op.sshared_jobtitle?.toLowerCase().includes('operator') ||
+        op.sshared_jobtitle?.toLowerCase().includes('plant')
+      ));
       setLeaveRequests(reqs);
-      setIsAdmin(admin);
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
-  }, [callDataverse, instance, account, monthStart, monthEnd]);
+  }, [callDataverse, monthStart, monthEnd, canSeeAll]);
 
   useEffect(() => { loadData(); }, [loadData]);
 

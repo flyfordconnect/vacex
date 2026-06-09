@@ -1,26 +1,20 @@
 // src/App.jsx
-// ─────────────────────────────────────────────────────────────
-// Root component. Sets up routing and enforces authentication
-// on every route. Unauthenticated users are redirected to
-// Microsoft login — no app content is ever rendered without
-// a valid Vac-Ex M365 session.
-// ─────────────────────────────────────────────────────────────
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useIsAuthenticated, useMsal } from '@azure/msal-react';
 import { InteractionStatus } from '@azure/msal-browser';
 import { loginRequest } from './authConfig';
+import { useGroups } from './hooks/useGroups';
 
-import Layout from './components/Layout';
-import Schedule from './pages/Schedule';
-import Availability from './pages/Availability';
-import MyLeave from './pages/MyLeave';
+import Layout    from './components/Layout';
 import LoadingScreen from './components/LoadingScreen';
+import AccessDenied  from './components/AccessDenied';
+import Home         from './pages/Home';
+import Schedule     from './pages/Schedule';
+import Availability from './pages/Availability';
+import MyLeave      from './pages/MyLeave';
 
 // ─── Auth guard ───────────────────────────────────────────────
-// Wraps every route. If the user is not authenticated, triggers
-// the Microsoft login redirect. Shows a loading screen while
-// MSAL is initialising to prevent a flash of unauthenticated UI.
 function RequireAuth({ children }) {
   const { instance, inProgress } = useMsal();
   const isAuthenticated = useIsAuthenticated();
@@ -31,11 +25,18 @@ function RequireAuth({ children }) {
   }
 
   if (!isAuthenticated) {
-    // Trigger redirect to Microsoft login
     instance.loginRedirect(loginRequest).catch(console.error);
     return <LoadingScreen message="Redirecting to Microsoft login…" />;
   }
 
+  return children;
+}
+
+// ─── Route guard — checks group membership ────────────────────
+function RequireGroup({ canAccess, children }) {
+  const { groups, groupsLoading } = useGroups();
+  if (groupsLoading) return <LoadingScreen message="Checking access…" />;
+  if (!canAccess(groups)) return <AccessDenied />;
   return children;
 }
 
@@ -45,18 +46,24 @@ export default function App() {
     <BrowserRouter>
       <RequireAuth>
         <Routes>
-          {/* Default route redirects to schedule */}
-          <Route path="/" element={<Navigate to="/schedule" replace />} />
-
-          {/* All routes share the same Layout (header + nav) */}
           <Route element={<Layout />}>
-            <Route path="/schedule"     element={<Schedule />} />
-            <Route path="/availability" element={<Availability />} />
-            <Route path="/myLeave"      element={<MyLeave />} />
-          </Route>
+            <Route path="/"            element={<Home />} />
+            <Route path="/myLeave"     element={<MyLeave />} />
 
-          {/* Catch-all */}
-          <Route path="*" element={<Navigate to="/schedule" replace />} />
+            <Route path="/schedule" element={
+              <RequireGroup canAccess={g => g?.canAccessSchedule}>
+                <Schedule />
+              </RequireGroup>
+            } />
+
+            <Route path="/availability" element={
+              <RequireGroup canAccess={g => g?.canAccessAvailability}>
+                <Availability />
+              </RequireGroup>
+            } />
+
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Route>
         </Routes>
       </RequireAuth>
     </BrowserRouter>

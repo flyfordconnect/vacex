@@ -111,17 +111,21 @@ export function formatDate(dateStr) {
 
 // ─── All Operators (for availability timeline) ────────────────
 export async function fetchOperators(callDataverse) {
-  const filter  = `statecode eq 0 and sshared_hremployeestatus eq 366700002`;
-  const select  = 'sshared_employeeid,sshared_name,sshared_companyemail,sshared_jobtitle,_sshared_departments_value';
+  // Filter on statecode only — sshared_hremployeestatus filtered client-side
+  // to avoid OData field name casing issues across environments
+  const filter  = `statecode eq 0`;
+  const select  = 'sshared_employeeid,sshared_name,sshared_companyemail,sshared_jobtitle,sshared_hremployeestatus,_sshared_departments_value';
   const orderby = 'sshared_name asc';
   const data = await callDataverse(
     `/sshared_employees?$filter=${encodeURIComponent(filter)}&$select=${select}&$orderby=${orderby}`
   );
-  // Attach department name from OData annotation for easy filtering
-  return (data?.value ?? []).map(op => ({
-    ...op,
-    departmentName: op['_sshared_departments_value@OData.Community.Display.V1.FormattedValue'] ?? '',
-  }));
+  // Filter to active employees (HR status = Employee: 366700002) and attach department name
+  return (data?.value ?? [])
+    .filter(op => op.sshared_hremployeestatus === 366700002)
+    .map(op => ({
+      ...op,
+      departmentName: op['_sshared_departments_value@OData.Community.Display.V1.FormattedValue'] ?? '',
+    }));
 }
 
 // ─── All Leave Requests for a date range (availability) ───────

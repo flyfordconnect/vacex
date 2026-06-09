@@ -107,11 +107,10 @@ export default function Availability() {
         fetchOperators(callDataverse),
         fetchAllLeaveRequests(callDataverse, monthStart, monthEnd),
       ]);
-      // Operations group sees operators only — filter by job title or department
-      // Leave Administrators All Staff sees everyone
+      // Operations group sees Operators department only — hard filter
+      // Leave Administrators All Staff sees all departments
       setOperators(canSeeAll ? ops : ops.filter(op =>
-        op.sshared_jobtitle?.toLowerCase().includes('operator') ||
-        op.sshared_jobtitle?.toLowerCase().includes('plant')
+        op.departmentName === 'Operators'
       ));
       setLeaveRequests(reqs);
     } catch (err) {

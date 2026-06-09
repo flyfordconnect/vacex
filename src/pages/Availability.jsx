@@ -54,8 +54,7 @@ const MONTH_NAMES = ['January','February','March','April','May','June','July','A
 // ─── Component ────────────────────────────────────────────────
 export default function Availability() {
   const { callDataverse, userEmail } = useDataverse();
-  const { instance, accounts } = useMsal();
-  const { groups } = useGroups();
+  const { groups, groupsLoading } = useGroups();
 
   const isAdmin      = groups?.canElevateOperators ?? false;
   const canSeeAll    = groups?.canSeeAllStaff ?? false;
@@ -98,8 +97,9 @@ export default function Availability() {
   const monthStart  = toDateStr(new Date(viewYear, viewMonth, 1));
   const monthEnd    = toDateStr(new Date(viewYear, viewMonth, daysInMonth));
 
-  // ── Load data ──
+  // ── Load data — wait for groups to resolve first ──
   const loadData = useCallback(async () => {
+    if (groupsLoading) return; // wait until group membership is known
     setLoading(true);
     setError(null);
     try {
@@ -118,7 +118,7 @@ export default function Availability() {
     } finally {
       setLoading(false);
     }
-  }, [callDataverse, monthStart, monthEnd, canSeeAll]);
+  }, [callDataverse, monthStart, monthEnd, canSeeAll, groupsLoading]);
 
   useEffect(() => { loadData(); }, [loadData]);
 

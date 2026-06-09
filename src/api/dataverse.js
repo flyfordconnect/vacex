@@ -34,7 +34,7 @@ export async function dvFetch(token, path, options = {}) {
 // ─── Leave Entitlements ───────────────────────────────────────
 export async function fetchLeaveEntitlements(callDataverse, userEmail, leaveYear) {
   const filter = `cr1d8_employeeemail eq '${userEmail}' and cr1d8_leaveyear eq ${leaveYear}`;
-  const select = 'cr1d8_leaveentitlementid,cr1d8_newcolumn,cr1d8_leavetype,cr1d8_annualallowance,cr1d8_daystaken,cr1d8_daysremaining,cr1d8_carryover,cr1d8_manageremail,cr1d8_leaveyear';
+  const select = 'cr1d8_leaveentitlementid,cr1d8_Newcolumn,cr1d8_leavetype,cr1d8_annualallowance,cr1d8_daystaken,cr1d8_daysremaining,cr1d8_carryover,cr1d8_manageremail,cr1d8_leaveyear';
   const data = await callDataverse(`/cr1d8_leaveentitlements?$filter=${encodeURIComponent(filter)}&$select=${select}`);
   return data?.value ?? [];
 }
@@ -42,7 +42,7 @@ export async function fetchLeaveEntitlements(callDataverse, userEmail, leaveYear
 // ─── Leave Requests ───────────────────────────────────────────
 export async function fetchLeaveRequests(callDataverse, userEmail) {
   const filter  = `cr1d8_employeeemail eq '${userEmail}'`;
-  const select  = 'cr1d8_leaverequestid,cr1d8_newcolumn,cr1d8_startdate,cr1d8_enddate,cr1d8_daysrequested,cr1d8_leavetype,cr1d8_status,cr1d8_employeenotes,cr1d8_declinereason,cr1d8_decidedon,cr1d8_outlookeventid';
+  const select  = 'cr1d8_leaverequestid,cr1d8_Newcolumn,cr1d8_startdate,cr1d8_enddate,cr1d8_daysrequested,cr1d8_leavetype,cr1d8_status,cr1d8_employeenotes,cr1d8_declinereason,cr1d8_decidedon,cr1d8_outlookeventid';
   const orderby = 'cr1d8_startdate desc';
   const data = await callDataverse(`/cr1d8_leaverequests?$filter=${encodeURIComponent(filter)}&$select=${select}&$orderby=${orderby}`);
   return data?.value ?? [];
@@ -108,3 +108,46 @@ export function formatDate(dateStr) {
     day:'2-digit', month:'short', year:'numeric'
   });
 }
+
+// ─── All Operators (for availability timeline) ────────────────
+export async function fetchOperators(callDataverse) {
+  const filter  = `statecode eq 0 and sshared_hremployeestatus eq 366700002`;
+  const select  = 'sshared_employeeid,sshared_name,sshared_companyemail,sshared_jobtitle,_sshared_departments_value';
+  const orderby = 'sshared_name asc';
+  const data = await callDataverse(
+    `/sshared_employees?$filter=${encodeURIComponent(filter)}&$select=${select}&$orderby=${orderby}`
+  );
+  return data?.value ?? [];
+}
+
+// ─── All Leave Requests for a date range (availability) ───────
+export async function fetchAllLeaveRequests(callDataverse, fromDate, toDate) {
+  // Fetch approved leave requests that overlap the visible month
+  const filter = `cr1d8_status eq 654460001 and cr1d8_startdate le ${toDate} and cr1d8_enddate ge ${fromDate}`;
+  const select = 'cr1d8_leaverequestid,cr1d8_employeeemail,cr1d8_startdate,cr1d8_enddate,cr1d8_leavetype,cr1d8_status,cr1d8_daysrequested,cr1d8_employeenotes';
+  const data = await callDataverse(
+    `/cr1d8_leaverequests?$filter=${encodeURIComponent(filter)}&$select=${select}`
+  );
+  return data?.value ?? [];
+}
+
+// ─── Create Leave Request (admin on behalf of operator) ───────
+export async function createApprovedLeaveRequest(callDataverse, payload) {
+  return callDataverse('/cr1d8_leaverequests', {
+    method: 'POST',
+    body: JSON.stringify({
+      ...payload,
+      cr1d8_status: 654460001, // Approved — bypasses approval flow
+    }),
+  });
+}
+
+// ─── Leave type colours for timeline blocks ───────────────────
+export const LEAVE_TYPE_COLOURS = {
+  654460000: { bg:'rgba(59,130,246,.35)',  border:'rgba(59,130,246,.6)',  text:'#93c5fd', label:'Annual'       },
+  654460001: { bg:'rgba(239,68,68,.35)',   border:'rgba(239,68,68,.6)',   text:'#fca5a5', label:'Sick'         },
+  654460002: { bg:'rgba(168,85,247,.35)',  border:'rgba(168,85,247,.6)',  text:'#d8b4fe', label:'Compassionate' },
+  654460003: { bg:'rgba(34,197,94,.35)',   border:'rgba(34,197,94,.6)',   text:'#86efac', label:'Reservist'    },
+  654460004: { bg:'rgba(107,114,128,.35)', border:'rgba(107,114,128,.6)', text:'#9ca3af', label:'Unpaid'       },
+  654460005: { bg:'rgba(245,158,11,.35)',  border:'rgba(245,158,11,.6)',  text:'#fcd34d', label:'Parental'     },
+};

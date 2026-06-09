@@ -129,7 +129,7 @@ export async function fetchOperators(callDataverse) {
 // ─── All Leave Requests for a date range (availability) ───────
 export async function fetchAllLeaveRequests(callDataverse, fromDate, toDate) {
   // Fetch approved leave requests that overlap the visible month
-  const filter = `cr1d8_status eq 654460001 and cr1d8_startdate le ${toDate} and cr1d8_enddate ge ${fromDate}`;
+  const filter = `cr1d8_status eq 654460001 and cr1d8_startdate le '${toDate}' and cr1d8_enddate ge '${fromDate}'`;
   const select = 'cr1d8_leaverequestid,cr1d8_employeeemail,cr1d8_startdate,cr1d8_enddate,cr1d8_leavetype,cr1d8_status,cr1d8_daysrequested,cr1d8_employeenotes';
   const data = await callDataverse(
     `/cr1d8_leaverequests?$filter=${encodeURIComponent(filter)}&$select=${select}`

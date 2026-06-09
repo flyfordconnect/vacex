@@ -93,7 +93,7 @@ export default function MyLeave() {
     const title        = `Leave ${new Date(formStart).toLocaleDateString('en-GB')} - ${new Date(formEnd).toLocaleDateString('en-GB')}`;
 
     const payload = {
-      cr1d8_Newcolumn:     title,
+      cr1d8_newcolumn:     title,
       cr1d8_employeeemail: userEmail,
       cr1d8_startdate:     formStart,
       cr1d8_enddate:       formEnd,

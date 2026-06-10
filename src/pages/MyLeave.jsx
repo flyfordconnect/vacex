@@ -162,21 +162,19 @@ export default function MyLeave() {
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(190px, 1fr))', gap:'12px' }}>
             {entitlements.map(ent => {
               const typeName = LEAVE_TYPES[ent.cr1d8_leavetype] ?? 'Unknown';
-              const isSick = ent.cr1d8_annualallowance === 0;
               return (
                 <div key={ent.cr1d8_leaveentitlementid} style={{ background:'var(--vx-surface)', border:'1px solid var(--vx-border)', borderRadius:'8px', padding:'14px 16px' }}>
                   <div style={{ fontSize:'10px', fontWeight:700, textTransform:'uppercase', letterSpacing:'1.5px', color:'var(--vx-muted)', marginBottom:'8px' }}>{typeName}</div>
-                  {isSick ? (
-                    <>
-                      <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'28px', fontWeight:700, color:'var(--vx-text)', lineHeight:1 }}>{ent.cr1d8_daystaken ?? 0}</div>
-                      <div style={{ fontSize:'11px', color:'var(--vx-muted)', marginTop:'4px' }}>days taken</div>
-                    </>
-                  ) : (
-                    <>
-                      <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'28px', fontWeight:700, color:'var(--vx-yellow)', lineHeight:1 }}>{ent.cr1d8_daystaken ?? 0}</div>
-                      <div style={{ fontSize:'11px', color:'var(--vx-muted)', marginTop:'4px' }}>of {ent.cr1d8_annualallowance ?? 0} days remaining</div>
-                      {(ent.cr1d8_daystaken ?? 0) > 0 && <div style={{ fontSize:'10px', color:'var(--vx-muted2)', marginTop:'2px' }}>{ent.cr1d8_daystaken} taken</div>}
-                    </>
+                  <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'28px', fontWeight:700, color:'var(--vx-yellow)', lineHeight:1 }}>
+                    {ent.cr1d8_daysremaining ?? 0}
+                  </div>
+                  <div style={{ fontSize:'11px', color:'var(--vx-muted)', marginTop:'4px' }}>
+                    of {ent.cr1d8_annualallowance ?? 0} days remaining
+                  </div>
+                  {(ent.cr1d8_daystaken ?? 0) > 0 && (
+                    <div style={{ fontSize:'10px', color:'var(--vx-muted2)', marginTop:'2px' }}>
+                      {ent.cr1d8_daystaken} taken
+                    </div>
                   )}
                 </div>
               );
@@ -221,7 +219,7 @@ export default function MyLeave() {
             </div>
           </div>
           {formError && <div style={{ background:'var(--red-bg)', border:'1px solid var(--red-bd)', color:'var(--red-txt)', borderRadius:'5px', padding:'10px 14px', fontSize:'12px', marginBottom:'16px' }}>{formError}</div>}
-          <button onClick={handleSubmit} disabled={submitting} style={{ background:'var(--vx-yellow)', border:'none', color:'var(--vx-black)', fontFamily:"'Barlow Condensed',sans-serif", fontSize:'14px', fontWeight:700, letterSpacing:'1px', textTransform:'uppercase', padding:'10px 28px', borderRadius:'5px', cursor:submitting?'not-allowed':'pointer', opacity:submitting?.6:1 }}>
+          <button onClick={handleSubmit} disabled={submitting} style={{ background:'var(--vx-yellow)', border:'none', color:'var(--vx-black)', fontFamily:"'Barlow Condensed',sans-serif", fontSize:'14px', fontWeight:700, letterSpacing:'1px', textTransform:'uppercase', padding:'10px 28px', borderRadius:'5px', cursor:submitting?'not-allowed':'pointer', opacity:submitting?0.6:1 }}>
             {submitting ? 'Submitting…' : 'Submit Request'}
           </button>
         </Section>
@@ -239,7 +237,7 @@ export default function MyLeave() {
               const isUpcoming  = statusLabel === 'Approved' && !past;
 
               return (
-                <div key={req.cr1d8_leaverequestid} style={{ background:'var(--vx-surface)', border:'1px solid var(--vx-border)', borderRadius:'8px', padding:'14px 16px', opacity:past?.65:1 }}>
+                <div key={req.cr1d8_leaverequestid} style={{ background:'var(--vx-surface)', border:'1px solid var(--vx-border)', borderRadius:'8px', padding:'14px 16px', opacity:past ? 0.65 : 1 }}>
                   <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', gap:'12px', flexWrap:'wrap' }}>
                     <div style={{ flex:1 }}>
                       <div style={{ fontSize:'14px', fontWeight:600, color:past?'var(--vx-muted)':'var(--vx-text)', marginBottom:'3px' }}>

@@ -139,7 +139,7 @@ export default function MyLeave() {
 
   const formDays = formStart && formEnd && new Date(formStart) <= new Date(formEnd)
     ? daysBetween(formStart, formEnd) : null;
-
+  console.log('Entitlements:', JSON.stringify(entitlements, null, 2));
   if (loading) return <PageCenter><Spinner /><Muted>Loading your leave…</Muted></PageCenter>;
   if (error)   return <PageCenter><Muted style={{ color:'var(--red-txt)' }}>Error: {error}</Muted></PageCenter>;
 

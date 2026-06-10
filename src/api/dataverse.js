@@ -101,10 +101,12 @@ export function daysBetween(start, end) {
   return Math.round((e - s) / (1000 * 60 * 60 * 24)) + 1;
 }
 
-// Format date for display
+// Format date for display — parse as local date to avoid UTC timezone shift
 export function formatDate(dateStr) {
   if (!dateStr) return '';
-  return new Date(dateStr).toLocaleDateString('en-GB', {
+  // Split and reconstruct to avoid timezone conversion
+  const [year, month, day] = dateStr.split('T')[0].split('-').map(Number);
+  return new Date(year, month - 1, day).toLocaleDateString('en-GB', {
     day:'2-digit', month:'short', year:'numeric'
   });
 }
@@ -129,7 +131,7 @@ export async function fetchOperators(callDataverse) {
 // ─── All Leave Requests for a date range (availability) ───────
 export async function fetchAllLeaveRequests(callDataverse, fromDate, toDate) {
   // Fetch approved leave requests that overlap the visible month
-  const filter = `cr1d8_status eq 654460001 and cr1d8_startdate le '${toDate}' and cr1d8_enddate ge '${fromDate}'`;
+  const filter = `cr1d8_status eq 654460001 and cr1d8_startdate le ${toDate} and cr1d8_enddate ge ${fromDate}`;
   const select = 'cr1d8_leaverequestid,cr1d8_employeeemail,cr1d8_startdate,cr1d8_enddate,cr1d8_leavetype,cr1d8_status,cr1d8_daysrequested,cr1d8_employeenotes';
   const data = await callDataverse(
     `/cr1d8_leaverequests?$filter=${encodeURIComponent(filter)}&$select=${select}`

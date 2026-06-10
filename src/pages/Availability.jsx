@@ -15,6 +15,7 @@ import {
   createApprovedLeaveRequest,
   LEAVE_TYPES,
   LEAVE_TYPE_COLOURS,
+  formatDate,
   currentLeaveYear,
   daysBetween,
 } from '../api/dataverse';
@@ -159,7 +160,14 @@ function getLeaveForDay(operatorEmail, day) {
 }
 
   // ── Cancel leave from timeline ──
-  async function handleCancelLeave(req) {
+async function handleCancelLeave(req) {
+    const leaveType = LEAVE_TYPES[req.cr1d8_leavetype] ?? 'Leave';
+    const start = formatDate(req.cr1d8_startdate);
+    const end   = formatDate(req.cr1d8_enddate);
+    const confirmed = window.confirm(
+      `Cancel ${leaveType} from ${start} to ${end}?\n\nThis cannot be undone.`
+    );
+    if (!confirmed) return;
     try {
       await cancelLeaveRequest(callDataverse, req.cr1d8_leaverequestid);
       showToast('Leave cancelled.');

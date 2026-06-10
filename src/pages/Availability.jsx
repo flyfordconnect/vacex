@@ -147,14 +147,16 @@ export default function Availability() {
   }
 
   // ── Get leave blocks for an operator on a given day ──
-  function getLeaveForDay(operatorEmail, day) {
-    const dateStr = toDateStr(new Date(viewYear, viewMonth, day));
-    return leaveRequests.filter(req =>
-      req.cr1d8_employeeemail?.toLowerCase() === operatorEmail?.toLowerCase() &&
-      req.cr1d8_startdate <= dateStr &&
-      req.cr1d8_enddate   >= dateStr
-    );
-  }
+function getLeaveForDay(operatorEmail, day) {
+  const dateStr = toDateStr(new Date(viewYear, viewMonth, day));
+  return leaveRequests.filter(req => {
+    const start = (req.cr1d8_startdate ?? '').split('T')[0];
+    const end   = (req.cr1d8_enddate   ?? '').split('T')[0];
+    return req.cr1d8_employeeemail?.toLowerCase() === operatorEmail?.toLowerCase() &&
+      start <= dateStr &&
+      end   >= dateStr;
+  });
+}
 
   // ── Cancel leave from timeline ──
   async function handleCancelLeave(req) {

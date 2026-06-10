@@ -162,7 +162,7 @@ export default function MyLeave() {
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(190px, 1fr))', gap:'12px' }}>
             {entitlements.map(ent => {
               const typeName = LEAVE_TYPES[ent.cr1d8_leavetype] ?? 'Unknown';
-              const isSick   = ent.cr1d8_leavetype === 654460001;
+              const isSick = ent.cr1d8_annualallowance === 0;
               return (
                 <div key={ent.cr1d8_leaveentitlementid} style={{ background:'var(--vx-surface)', border:'1px solid var(--vx-border)', borderRadius:'8px', padding:'14px 16px' }}>
                   <div style={{ fontSize:'10px', fontWeight:700, textTransform:'uppercase', letterSpacing:'1.5px', color:'var(--vx-muted)', marginBottom:'8px' }}>{typeName}</div>
@@ -173,7 +173,7 @@ export default function MyLeave() {
                     </>
                   ) : (
                     <>
-                      <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'28px', fontWeight:700, color:'var(--vx-yellow)', lineHeight:1 }}>{ent.cr1d8_daysremaining ?? 0}</div>
+                      <div style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:'28px', fontWeight:700, color:'var(--vx-yellow)', lineHeight:1 }}>{ent.cr1d8_daystaken ?? 0}</div>
                       <div style={{ fontSize:'11px', color:'var(--vx-muted)', marginTop:'4px' }}>of {ent.cr1d8_annualallowance ?? 0} days remaining</div>
                       {(ent.cr1d8_daystaken ?? 0) > 0 && <div style={{ fontSize:'10px', color:'var(--vx-muted2)', marginTop:'2px' }}>{ent.cr1d8_daystaken} taken</div>}
                     </>

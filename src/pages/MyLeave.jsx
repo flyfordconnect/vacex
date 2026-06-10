@@ -22,11 +22,11 @@ import {
 
 const LEAVE_TYPE_OPTIONS = [
   { label: 'Annual Leave',        value: 654460000 },
-  { label: 'Sick',                value: 654460001 },
-  { label: 'Compassionate Leave', value: 654460002 },
+  { label: 'Compassionate Leave', value: 654460001 },
+  { label: 'Parental Leave',      value: 654460002 },
   { label: 'Reservist Leave',     value: 654460003 },
-  { label: 'Unpaid Leave',        value: 654460004 },
-  { label: 'Parental Leave',      value: 654460005 },
+  { label: 'Sick',                value: 654460004 },
+  { label: 'Unpaid Leave',        value: 654460005 },
 ];
 
 const LEAVE_YEAR = currentLeaveYear();

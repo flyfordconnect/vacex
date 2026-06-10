@@ -160,7 +160,7 @@ export default function MyLeave() {
           <Muted>No entitlement records found for this leave year. Contact your administrator.</Muted>
         ) : (
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(190px, 1fr))', gap:'12px' }}>
-            {entitlements.map(ent => {
+            {[...entitlements].sort((a, b) => a.cr1d8_leavetype - b.cr1d8_leavetype).map(ent => {
               const typeName = LEAVE_TYPES[ent.cr1d8_leavetype] ?? 'Unknown';
               return (
                 <div key={ent.cr1d8_leaveentitlementid} style={{ background:'var(--vx-surface)', border:'1px solid var(--vx-border)', borderRadius:'8px', padding:'14px 16px' }}>

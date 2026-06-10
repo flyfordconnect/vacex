@@ -67,11 +67,11 @@ export async function cancelLeaveRequest(callDataverse, requestId) {
 // ─── Constants ────────────────────────────────────────────────
 export const LEAVE_TYPES = {
   654460000: 'Annual Leave',
-  654460001: 'Sick',
-  654460002: 'Compassionate Leave',
+  654460001: 'Compassionate Leave',
+  654460002: 'Parental Leave',
   654460003: 'Reservist Leave',
-  654460004: 'Unpaid Leave',
-  654460005: 'Parental Leave',
+  654460004: 'Sick',
+  654460005: 'Unpaid Leave',
 };
 
 export const LEAVE_STATUS = {
@@ -152,10 +152,10 @@ export async function createApprovedLeaveRequest(callDataverse, payload) {
 
 // ─── Leave type colours for timeline blocks ───────────────────
 export const LEAVE_TYPE_COLOURS = {
-  654460000: { bg:'rgba(59,130,246,.35)',  border:'rgba(59,130,246,.6)',  text:'#93c5fd', label:'Annual'       },
-  654460001: { bg:'rgba(239,68,68,.35)',   border:'rgba(239,68,68,.6)',   text:'#fca5a5', label:'Sick'         },
-  654460002: { bg:'rgba(168,85,247,.35)',  border:'rgba(168,85,247,.6)',  text:'#d8b4fe', label:'Compassionate' },
-  654460003: { bg:'rgba(34,197,94,.35)',   border:'rgba(34,197,94,.6)',   text:'#86efac', label:'Reservist'    },
-  654460004: { bg:'rgba(107,114,128,.35)', border:'rgba(107,114,128,.6)', text:'#9ca3af', label:'Unpaid'       },
-  654460005: { bg:'rgba(245,158,11,.35)',  border:'rgba(245,158,11,.6)',  text:'#fcd34d', label:'Parental'     },
+  654460000: { bg:'rgba(59,130,246,.35)',  border:'rgba(59,130,246,.6)',  text:'#93c5fd', label:'Annual'        },
+  654460001: { bg:'rgba(168,85,247,.35)',  border:'rgba(168,85,247,.6)',  text:'#d8b4fe', label:'Compassionate' },
+  654460002: { bg:'rgba(245,158,11,.35)',  border:'rgba(245,158,11,.6)',  text:'#fcd34d', label:'Parental'      },
+  654460003: { bg:'rgba(34,197,94,.35)',   border:'rgba(34,197,94,.6)',   text:'#86efac', label:'Reservist'     },
+  654460004: { bg:'rgba(239,68,68,.35)',   border:'rgba(239,68,68,.6)',   text:'#fca5a5', label:'Sick'          },
+  654460005: { bg:'rgba(107,114,128,.35)', border:'rgba(107,114,128,.6)', text:'#9ca3af', label:'Unpaid'        },
 };

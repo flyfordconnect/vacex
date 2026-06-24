@@ -34,7 +34,7 @@ export async function dvFetch(token, path, options = {}) {
 // ─── Leave Entitlements ───────────────────────────────────────
 export async function fetchLeaveEntitlements(callDataverse, userEmail, leaveYear) {
   const filter = `cr1d8_employeeemail eq '${userEmail}' and cr1d8_leaveyear eq ${leaveYear}`;
-  const select = 'cr1d8_leaveentitlementid,cr1d8_newcolumn,cr1d8_leavetype,cr1d8_annualallowance,cr1d8_daystaken,cr1d8_daysremaining,cr1d8_carryover,cr1d8_manageremail,cr1d8_leaveyear';
+  const select = 'cr1d8_leaveentitlementid,cr1d8_newcolumn,cr1d8_leavetypeglobal,cr1d8_annualallowance,cr1d8_daystaken,cr1d8_daysremaining,cr1d8_carryover,cr1d8_manageremail,cr1d8_leaveyear';
   const data = await callDataverse(`/cr1d8_leaveentitlements?$filter=${encodeURIComponent(filter)}&$select=${select}`);
   return data?.value ?? [];
 }
@@ -42,7 +42,7 @@ export async function fetchLeaveEntitlements(callDataverse, userEmail, leaveYear
 // ─── Leave Requests ───────────────────────────────────────────
 export async function fetchLeaveRequests(callDataverse, userEmail) {
   const filter  = `cr1d8_employeeemail eq '${userEmail}'`;
-  const select  = 'cr1d8_leaverequestid,cr1d8_newcolumn,cr1d8_startdate,cr1d8_enddate,cr1d8_daysrequested,cr1d8_leavetype,cr1d8_status,cr1d8_employeenotes,cr1d8_declinereason,cr1d8_decidedon,cr1d8_outlookeventid';
+  const select  = 'cr1d8_leaverequestid,cr1d8_newcolumn,cr1d8_startdate,cr1d8_enddate,cr1d8_daysrequested,cr1d8_leavetypeglobal,cr1d8_status,cr1d8_employeenotes,cr1d8_declinereason,cr1d8_decidedon,cr1d8_outlookeventid';
   const orderby = 'cr1d8_startdate desc';
   const data = await callDataverse(`/cr1d8_leaverequests?$filter=${encodeURIComponent(filter)}&$select=${select}&$orderby=${orderby}`);
   return data?.value ?? [];
@@ -132,7 +132,7 @@ export async function fetchOperators(callDataverse) {
 export async function fetchAllLeaveRequests(callDataverse, fromDate, toDate) {
   // Fetch approved leave requests that overlap the visible month
   const filter = `cr1d8_status eq 654460001 and cr1d8_startdate le '${toDate}' and cr1d8_enddate ge '${fromDate}'`;
-  const select = 'cr1d8_leaverequestid,cr1d8_employeeemail,cr1d8_startdate,cr1d8_enddate,cr1d8_leavetype,cr1d8_status,cr1d8_daysrequested,cr1d8_employeenotes';
+  const select = 'cr1d8_leaverequestid,cr1d8_employeeemail,cr1d8_startdate,cr1d8_enddate,cr1d8_leavetypeglobal,cr1d8_status,cr1d8_daysrequested,cr1d8_employeenotes';
   const data = await callDataverse(
     `/cr1d8_leaverequests?$filter=${encodeURIComponent(filter)}&$select=${select}`
   );

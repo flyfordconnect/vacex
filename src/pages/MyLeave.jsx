@@ -81,27 +81,27 @@ export default function MyLeave() {
     const daysRequested = daysBetween(formStart, formEnd);
 
     if (formType === 654460000) {
-      const annualEnt = entitlements.find(e => e.cr1d8_leavetype === 654460000);
+      const annualEnt = entitlements.find(e => e.cr1d8_leavetypeglobal === 654460000);
       if (annualEnt && daysRequested > annualEnt.cr1d8_daysremaining) {
         setFormError(`You only have ${annualEnt.cr1d8_daysremaining} days Annual Leave remaining. Requested: ${daysRequested} days.`);
         return;
       }
     }
 
-    const annualEnt    = entitlements.find(e => e.cr1d8_leavetype === 654460000);
+    const annualEnt    = entitlements.find(e => e.cr1d8_leavetypeglobal === 654460000);
     const managerEmail = annualEnt?.cr1d8_manageremail ?? '';
     const title        = `Leave ${new Date(formStart).toLocaleDateString('en-GB')} - ${new Date(formEnd).toLocaleDateString('en-GB')}`;
 
     const payload = {
-      cr1d8_newcolumn:     title,
-      cr1d8_employeeemail: userEmail,
-      cr1d8_startdate:     formStart,
-      cr1d8_enddate:       formEnd,
-      cr1d8_daysrequested: daysRequested,
-      cr1d8_leavetype:     formType,
-      cr1d8_employeenotes: formNotes,
-      cr1d8_managerid:     managerEmail,
-      cr1d8_status:        654460000,
+      cr1d8_newcolumn:       title,
+      cr1d8_employeeemail:   userEmail,
+      cr1d8_startdate:       formStart,
+      cr1d8_enddate:         formEnd,
+      cr1d8_daysrequested:   daysRequested,
+      cr1d8_leavetypeglobal: formType,
+      cr1d8_employeenotes:   formNotes,
+      cr1d8_managerid:       managerEmail,
+      cr1d8_status:          654460000,
     };
 
     setSubmitting(true);
@@ -139,7 +139,7 @@ export default function MyLeave() {
 
   const formDays = formStart && formEnd && new Date(formStart) <= new Date(formEnd)
     ? daysBetween(formStart, formEnd) : null;
-  console.log('Entitlements:', JSON.stringify(entitlements, null, 2));
+
   if (loading) return <PageCenter><Spinner /><Muted>Loading your leave…</Muted></PageCenter>;
   if (error)   return <PageCenter><Muted style={{ color:'var(--red-txt)' }}>Error: {error}</Muted></PageCenter>;
 
@@ -160,8 +160,8 @@ export default function MyLeave() {
           <Muted>No entitlement records found for this leave year. Contact your administrator.</Muted>
         ) : (
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(190px, 1fr))', gap:'12px' }}>
-            {[...entitlements].sort((a, b) => a.cr1d8_leavetype - b.cr1d8_leavetype).map(ent => {
-              const typeName = LEAVE_TYPES[ent.cr1d8_leavetype] ?? 'Unknown';
+            {[...entitlements].sort((a, b) => a.cr1d8_leavetypeglobal - b.cr1d8_leavetypeglobal).map(ent => {
+              const typeName = LEAVE_TYPES[ent.cr1d8_leavetypeglobal] ?? 'Unknown';
               return (
                 <div key={ent.cr1d8_leaveentitlementid} style={{ background:'var(--vx-surface)', border:'1px solid var(--vx-border)', borderRadius:'8px', padding:'14px 16px' }}>
                   <div style={{ fontSize:'10px', fontWeight:700, textTransform:'uppercase', letterSpacing:'1.5px', color:'var(--vx-muted)', marginBottom:'8px' }}>{typeName}</div>
@@ -244,7 +244,7 @@ export default function MyLeave() {
                         {formatDate(req.cr1d8_startdate)} — {formatDate(req.cr1d8_enddate)}
                       </div>
                       <div style={{ fontSize:'12px', color:'var(--vx-muted)', marginBottom:'3px' }}>
-                        {LEAVE_TYPES[req.cr1d8_leavetype] ?? 'Unknown'} · {req.cr1d8_daysrequested} day{req.cr1d8_daysrequested !== 1 ? 's' : ''}
+                        {LEAVE_TYPES[req.cr1d8_leavetypeglobal] ?? 'Unknown'} · {req.cr1d8_daysrequested} day{req.cr1d8_daysrequested !== 1 ? 's' : ''}
                       </div>
                       {statusLabel === 'Declined' && req.cr1d8_declinereason && (
                         <div style={{ fontSize:'11px', color:'var(--red-txt)', marginTop:'4px' }}>Reason: {req.cr1d8_declinereason}</div>

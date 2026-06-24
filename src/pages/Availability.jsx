@@ -45,11 +45,11 @@ function dayOfWeekLabel(year, month, day) {
 
 const LEAVE_TYPE_OPTIONS_LIST = [
   { label:'Annual Leave',        value:654460000 },
-  { label:'Sick',                value:654460001 },
-  { label:'Compassionate Leave', value:654460002 },
+  { label:'Compassionate Leave', value:654460001 },
+  { label:'Parental Leave',      value:654460002 },
   { label:'Reservist Leave',     value:654460003 },
-  { label:'Unpaid Leave',        value:654460004 },
-  { label:'Parental Leave',      value:654460005 },
+  { label:'Sick',                value:654460004 },
+  { label:'Unpaid Leave',        value:654460005 },
 ];
 
 const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -161,7 +161,7 @@ function getLeaveForDay(operatorEmail, day) {
 
   // ── Cancel leave from timeline ──
 async function handleCancelLeave(req) {
-    const leaveType = LEAVE_TYPES[req.cr1d8_leavetype] ?? 'Leave';
+    const leaveType = LEAVE_TYPES[req.cr1d8_leavetypeglobal] ?? 'Leave';
     const start = formatDate(req.cr1d8_startdate);
     const end   = formatDate(req.cr1d8_enddate);
     const confirmed = window.confirm(
@@ -190,13 +190,13 @@ async function handleCancelLeave(req) {
     setModalSaving(true);
     try {
       await createApprovedLeaveRequest(callDataverse, {
-        cr1d8_newcolumn:     title,
-        cr1d8_employeeemail: op.sshared_companyemail?.toLowerCase(),
-        cr1d8_startdate:     modalStart,
-        cr1d8_enddate:       modalEnd,
-        cr1d8_daysrequested: days,
-        cr1d8_leavetype:     modalType,
-        cr1d8_employeenotes: modalNotes,
+        cr1d8_newcolumn:       title,
+        cr1d8_employeeemail:   op.sshared_companyemail?.toLowerCase(),
+        cr1d8_startdate:       modalStart,
+        cr1d8_enddate:         modalEnd,
+        cr1d8_daysrequested:   days,
+        cr1d8_leavetypeglobal: modalType,
+        cr1d8_employeenotes:   modalNotes,
       });
       setAddModal(null);
       setModalStart(''); setModalEnd(''); setModalNotes(''); setModalType(654460000);
@@ -359,13 +359,13 @@ async function handleCancelLeave(req) {
                           height:'44px',
                         }}>
                           {dayLeave.map(req => {
-                            const col = LEAVE_TYPE_COLOURS[req.cr1d8_leavetype] ?? LEAVE_TYPE_COLOURS[654460000];
+                            const col = LEAVE_TYPE_COLOURS[req.cr1d8_leavetypeglobal] ?? LEAVE_TYPE_COLOURS[654460000];
                             // Only show label on first day of the block
                             const dateStr   = toDateStr(new Date(viewYear, viewMonth, day));
                             const isFirst   = req.cr1d8_startdate === dateStr || day === 1;
                             return (
                               <div key={req.cr1d8_leaverequestid}
-                                title={`${LEAVE_TYPES[req.cr1d8_leavetype] ?? 'Leave'} — click to cancel`}
+                                title={`${LEAVE_TYPES[req.cr1d8_leavetypeglobal] ?? 'Leave'} — click to cancel`}
                                 onClick={() => isAdmin && handleCancelLeave(req)}
                                 style={{
                                   background: col.bg,

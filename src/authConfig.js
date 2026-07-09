@@ -3,6 +3,9 @@
 // MSAL configuration for Vac-Ex Microsoft 365 tenant.
 // ─────────────────────────────────────────────────────────────
 
+// Dataverse environment URL — supplied at build time per environment
+export const DATAVERSE_URL = import.meta.env.VITE_DATAVERSE_URL;
+
 export const msalConfig = {
   auth: {
     clientId: 'a4efba87-cf64-4dc1-adc8-5c46f6eafd61',
@@ -20,7 +23,7 @@ export const msalConfig = {
 export const loginRequest = {
   scopes: [
     'User.Read',
-    'https://vacex-sandbox.crm11.dynamics.com/user_impersonation',
+    `${DATAVERSE_URL}/user_impersonation`,
   ],
 };
 
@@ -34,15 +37,7 @@ export const graphRequest = {
   scopes: ['https://graph.microsoft.com/GroupMember.Read.All'],
 };
 
-// Dataverse Sandbox environment URL
-export const DATAVERSE_URL = 'https://vacex-sandbox.crm11.dynamics.com';
-
 // ─── Security Groups ──────────────────────────────────────────
-// Access to /schedule and /availability — operators only view
 export const OPERATIONS_GROUP_ID = 'db82586d-682a-4de0-97dc-c7cdad9ebf2a';
-
-// Elevated add/cancel leave for operators on /availability
 export const LEAVE_ADMIN_OPERATORS_GROUP_ID = '4450fab5-d2ed-4d38-af57-614c4296f973';
-
-// Access to /availability — all staff visible, elevated add/cancel for everyone
 export const LEAVE_ADMIN_ALL_STAFF_GROUP_ID = 'a875edd3-1eac-4bd3-9f40-a15b30d54b2b';

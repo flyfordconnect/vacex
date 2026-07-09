@@ -1,4 +1,4 @@
-# Resourcify — React App
+# Resourcify — React App (resources)
 
 ## Project Structure
 

@@ -50,6 +50,7 @@ const LEAVE_TYPE_OPTIONS_LIST = [
   { label:'Reservist Leave',     value:654460003 },
   { label:'Sick',                value:654460004 },
   { label:'Unpaid Leave',        value:654460005 },
+  { label:'Maternity/Paternity', value:654460006 },
 ];
 
 const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];

@@ -27,6 +27,7 @@ const LEAVE_TYPE_OPTIONS = [
   { label: 'Reservist Leave',     value: 654460003 },
   { label: 'Sick',                value: 654460004 },
   { label: 'Unpaid Leave',        value: 654460005 },
+  { label: 'Maternity/Paternity', value: 654460006 },
 ];
 
 const LEAVE_YEAR = currentLeaveYear();

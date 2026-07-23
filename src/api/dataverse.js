@@ -72,6 +72,7 @@ export const LEAVE_TYPES = {
   654460003: 'Reservist Leave',
   654460004: 'Sick',
   654460005: 'Unpaid Leave',
+  654460006: 'Maternity/Paternity',
 };
 
 export const LEAVE_STATUS = {
@@ -158,4 +159,5 @@ export const LEAVE_TYPE_COLOURS = {
   654460003: { bg:'rgba(34,197,94,.35)',   border:'rgba(34,197,94,.6)',   text:'#86efac', label:'Reservist'     },
   654460004: { bg:'rgba(239,68,68,.35)',   border:'rgba(239,68,68,.6)',   text:'#fca5a5', label:'Sick'          },
   654460005: { bg:'rgba(107,114,128,.35)', border:'rgba(107,114,128,.6)', text:'#9ca3af', label:'Unpaid'        },
+  654460006: { bg:'rgba(20,184,166,.35)',  border:'rgba(20,184,166,.6)',  text:'#5eead4', label:'Maternity/Paternity' },
 };
